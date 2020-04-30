@@ -55,7 +55,7 @@ if (mysqli_connect_errno()) {
 
 $public_ip = file_get_contents('http://dynamicdns.park-your-domain.com/getip');
 if(!filter_var($public_ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === true) {
-	printf("\r\n¡IPV4 para el filtrado de IP pública falló! \r\nPuede que necesite usar otra fuente de IP. \r\n\r\n");
+	printf("\r\n¡IPV4 para el filtrado de IP pública falló! \r\nPuede que necesite usar otra fuente de IP. \r\n");
 	exit();
 }
 
@@ -80,8 +80,7 @@ $soa_ip = $matched[0];
 	enable it, by uncommenting the log line below this. */
 
 if(($public_ip == $db_ip) && ($public_ip == $soa_ip)) {
-	// printf("\r\nThe server, soa zone files and public ip addresses match. \r\n\r\n");
-	printf("\r\nAviso del servidor: Los archivos de zona de SOA y las direcciones IP públicas coinciden. \r\n\r\n");
+	// printf("\r\nAviso del servidor: Los archivos de zona de SOA y las direcciones IP públicas coinciden. \r\n");
 	exit();
 }
 
@@ -96,7 +95,7 @@ if($public_ip != $soa_ip) {
 	// Warn and update if soa zone files update failed.
 	foreach(file($bind) as $binding=>$b) {
 		if(strpos($b, "$soa_ip")==true) {
-			printf("\r\n¡Las actualizaciones de archivos de zona SOA fallaron! \r\nEl código de actualización de archivos de zona puede necesitar una reparación o actualización. \r\n\r\n");
+			printf("\r\n¡Las actualizaciones de archivos de zona SOA fallaron! \r\nEl código de actualización de archivos de zona puede necesitar una reparación o actualización. \r\n");
 			exit();
 		}
 	}
@@ -121,7 +120,7 @@ if($public_ip != $db_ip) {
 	$query_new_ip = mysqli_query($ip_updater, 'SELECT ip_address FROM server_ip WHERE server_id =1');
 	list($db_new_ip) = mysqli_fetch_row($query_new_ip);
 	if ($public_ip != $db_new_ip) {
-		printf("\r\n¡Actualización de la base de datos fallida! \r\nEl código de actualización de la base de datos puede necesitar una corrección o actualización. \r\n\r\n");
+		printf("\r\n¡Actualización de la base de datos fallida! \r\nEl código de actualización de la base de datos puede necesitar una corrección o actualización. \r\n");
 		exit();
 	}
 }
@@ -148,13 +147,14 @@ if(is_array($zones) && !empty($zones)) {
 	apache without any logging for now on. However, you may
 	enable it, by uncommenting the line below this. */
 
-printf("\r\n¡Se han actualizado correctamente los archivos de zona SOA y la Base de Datos! \r\n\r\n");
+printf("\r\n¡Se han actualizado correctamente los archivos de zona SOA y la Base de Datos! \r\n");
 
 mysqli_close($ip_updater);
 
 /*	You should define your server software to restart if it is not here. */
-exec('service apache2 restart');
+exec('sudo -u root service apache2 restart');
+printf("\r\n¡Se ha reiniciado con Exito el Servidor Apache! \r\n");
 
 /* Comment this out if you want to reboot afterwards */
-exec('reboot');
+// exec('sudo -u root reboot');
 ?>
