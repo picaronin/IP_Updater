@@ -33,9 +33,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 $sock = fsockopen('www.google.com', 80, $errno, $errstr, 10);
 if (!$sock) {
-		printf("\r\n¡Sin conexión a internet! Vuelva a intentar actualizar IP. \r\n, $errstr ($errno)\r\n");
-		require_once 'ip_updater.php';
-		exit();
+    printf("\r\n¡Sin conexión a internet! Vuelva a intentar actualizar IP. \r\n, $errstr ($errno)\r\n");
+    exit();
 }
 
 /*	Get database access by using ispconfig default configuration so no
@@ -43,10 +42,11 @@ if (!$sock) {
 
 require_once 'config.inc.php';
 require_once 'app.inc.php';
+
 $ip_updater = mysqli_connect($conf['db_host'], $conf['db_user'], $conf['db_password'], $conf['db_database']);
 if (mysqli_connect_errno()) {
-		printf("\r\n¡Conexión a la base de datos ISPConfig fallida! \r\n", mysqli_connect_error());
-		exit();
+    printf("\r\n¡Conexión a la base de datos ISPConfig fallida! \r\n", mysqli_connect_error());
+    exit();
 }
 
 /*	Else, it works. Now get public ip from a reliable source.
@@ -78,6 +78,11 @@ $soa_ip = $matched[0];
 	for error only, so we close database connection and restart
 	apache without any logging for now on. However, you may
 	enable it, by uncommenting the log line below this. */
+
+if(!$db_ip || !$public_ip || !$soa_ip) {
+	printf("\r\nERROR: Se aborta. No se localiza la IP pública actual o no esta definida la IP del servidor. \r\n");
+	exit();
+}
 
 if(($public_ip == $db_ip) && ($public_ip == $soa_ip)) {
 	// printf("\r\nAviso del servidor: Los archivos de zona de SOA y las direcciones IP públicas coinciden. \r\n");
@@ -148,12 +153,15 @@ if(is_array($zones) && !empty($zones)) {
 	enable it, by uncommenting the line below this. */
 
 printf("\r\n¡Se han actualizado correctamente los archivos de zona SOA y la Base de Datos! \r\n");
+printf("La nueva IP es: $public_ip \r\n");
 
 mysqli_close($ip_updater);
 
 /*	You should define your server software to restart if it is not here. */
 exec('sudo -u root service apache2 restart');
-printf("\r\n¡Se ha reiniciado con Exito el Servidor Apache! \r\n");
+exec('sudo -u root service bind9 force-reload');
+exec('sudo -u root service service bind9 restart');
+printf("¡Se han reiniciado con Exito el Servidor Apache y el Servidor de DNS! \r\n");
 
 /* Comment this out if you want to reboot afterwards */
 // exec('sudo -u root reboot');
