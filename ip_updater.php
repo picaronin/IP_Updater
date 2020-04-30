@@ -42,6 +42,7 @@ if (!$sock) {
 	user and its password are disclosed. Exit if its connection failed */
 
 require_once 'config.inc.php';
+require_once 'app.inc.php';
 $ip_updater = mysqli_connect($conf['db_host'], $conf['db_user'], $conf['db_password'], $conf['db_database']);
 if (mysqli_connect_errno()) {
 		printf("\r\n¡Conexión a la base de datos ISPConfig fallida! \r\n", mysqli_connect_error());
