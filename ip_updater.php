@@ -160,7 +160,7 @@ mysqli_close($ip_updater);
 /*	You should define your server software to restart if it is not here. */
 exec('sudo -u root service apache2 restart');
 exec('sudo -u root service bind9 force-reload');
-exec('sudo -u root service service bind9 restart');
+exec('sudo -u root service bind9 restart');
 printf("¡Se han reiniciado con Exito el Servidor Apache y el Servidor de DNS! \r\n");
 
 /* Comment this out if you want to reboot afterwards */
