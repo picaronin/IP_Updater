@@ -1,5 +1,5 @@
-# IP_Updater for ISPConfig 3.1
-Dynamic IP Automatic Updater for ISPConfig 3.1 Server.
+# IP_Updater for ISPConfig 3
+Dynamic IP Auto Updater for Debian / Ubuntu ISPConfig 3 Server.
 
 ## Install
 1. cd `/usr/local/ispconfig/interface/lib`
